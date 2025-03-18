@@ -1,0 +1,127 @@
+#comparing algo
+import heapq 
+from collections import deque
+
+def a_star(graph, start, goal, heuristic):
+    pq=[]
+    heapq.heappush(pq,(0+heuristic[start],0,start,[]))
+    visited=set()
+    count=1
+    while pq:
+        hcost,cost,node,path = heapq.heappop(pq)
+        
+        if node==goal:
+            # count+=1
+            newpath=path+[node]
+            return cost,newpath,count
+
+        if node not in visited:
+            newpath=path+[node]
+            visited.add(node)
+            for adjnode,adjcost in graph[node].items():
+                if adjnode not in visited:
+                    heapq.heappush(pq,(cost+adjcost+heuristic[adjnode],cost+adjcost,adjnode,newpath))
+                    count+=1
+    return -1
+def ucs(graph,start_node,goal_node):
+    pq = []
+
+    heapq.heappush(pq,(0,start_node,[]))
+    visited = set()
+    count=1
+    while pq:
+        cost,node,path = heapq.heappop(pq)
+        if node not in visited:
+            visited.add(node)
+            newpath=path+[node]
+            if node == goal_node:
+                return cost,path,count
+            for adjnode,adjcost in graph[node].items():
+                if adjnode not in visited:
+                    heapq.heappush(pq,(cost+adjcost,adjnode,newpath))
+                    count+=1
+
+
+def bfs(graph, start,goal):
+    queue=deque()
+    queue.append((start,0,[]))#node ,cost ,path
+    mincost=1000
+    ans=[-1,[]]#cost , path
+    count = 1
+    while queue:
+        curnode,curcost,path=queue.popleft()
+        if curnode==goal:
+            if curcost<mincost:
+                mincost=curcost
+                ans[0]=curcost
+                ans[1]=path+[curnode]
+        for adjnode,adjcost in graph[curnode].items():
+            newpath=path+[curnode]
+            if adjnode not in path:
+                queue.append((adjnode,curcost+adjcost,newpath))
+                count+=1
+    return (ans[0],ans[1],count)
+
+def countdfs(graph,start,goal):
+    ans=[-1,[]]
+    mincost=1000
+    count=1
+    def dfs(curnode,curcost,path):
+        nonlocal mincost,count
+
+        if curnode==goal:
+            if curcost<mincost:
+                mincost=curcost
+                ans[0]=curcost
+                ans[1]=path+[curnode]
+        for adjnode,adjcost in graph[curnode].items():
+            newpath=path+[curnode]
+            if adjnode not in path:
+                dfs(adjnode,curcost+adjcost,newpath)
+                count+=1
+
+    dfs(start,0,[])
+    return (ans[0],ans[1],count)
+
+graph = {
+'0': {'1': 2, '2': 1},
+'1': {'3': 11, '4': 3, '2': 5, '0': 2},
+'2': {'0': 1, '1': 5, '4': 1, '5': 15},
+'3': {'6': 1, '4': 2, '1': 11},
+'4': {'1': 3, '2': 1, '5': 4, '3': 2, '6': 5},
+'5': {'2': 15, '4': 4, '6': 1},
+'6': {'3': 1, '4': 5, '5': 1},
+}
+heuristic={
+'0': 1,
+'1': 3,
+'2': 15,
+'3': 2,
+'4': 1,
+'5': 1000,
+'6': 0
+}
+start_node = '0'
+goal_node = '6'
+
+cost,path,count=a_star(graph,start_node,goal_node,heuristic)
+print(f'cost: {cost}')
+print(f'path: {path}')
+print(f'count: {count}')
+
+cost,path,count=ucs(graph,start_node,goal_node)
+print(f'cost: {cost}')
+print(f'path: {path}')
+print(f'count: {count}')
+
+print('bfs')
+cost,path,count=bfs(graph,start_node,goal_node)
+print(f'cost: {cost}')
+print(f'path: {path}')
+print(f'count: {count}')
+
+print('DFS')
+cost,path,count=countdfs(graph,start_node,goal_node)
+print(f'cost: {cost}')
+print(f'path: {path}')
+print(f'count: {count}')

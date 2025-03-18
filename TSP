@@ -1,0 +1,61 @@
+#tsp
+import random 
+
+def random_solution(tsp):
+    cities = list(range(len(tsp)))
+    solution =[]
+    for i in range(len(tsp)):
+        randomCityNumber= cities[random.randint(0,len(cities)-1)]
+        solution.append(randomCityNumber)
+        cities.remove(randomCityNumber)
+    return solution
+
+def getCost(tsp,solution):
+    cost = 0
+    for i in range(len(solution)):
+        cost+= tsp[solution[i-1]][solution[i]]
+    return cost
+
+def getNeighbours(solution):
+    neighbours = []
+    for i in range(len(solution)-1):
+        for j in range(i+1,len(solution)):
+            dummyneighbour = solution.copy()
+            dummyneighbour[i],dummyneighbour[j] = solution[j],solution[i]
+            neighbours.append(dummyneighbour)
+    return neighbours
+
+def bestPath(tsp,neighbours):
+    bestNeighbour = neighbours[0] #assume first element is best
+    bestNeighbourCost = getCost(tsp,bestNeighbour)
+    for i in neighbours:
+        currentneighbourcost = getCost(tsp,i) #current neighbour cost
+        if(currentneighbourcost<bestNeighbourCost):
+            bestNeighbourCost= currentneighbourcost
+            bestNeighbour=i
+    return bestNeighbour,bestNeighbourCost
+
+def hillClimbing(tsp):
+    currentSolution = random_solution(tsp)
+    currentCost = getCost(tsp,currentSolution)
+    currentNeighbours = getNeighbours(currentSolution)
+    bestNeighbour,bestCost = bestPath(tsp,currentNeighbours)
+    while(bestCost<currentCost):
+        currentSolution=bestNeighbour
+        currentCost= bestCost
+        currentNeighbours=getNeighbours(currentSolution)
+        bestNeighbour,bestCost= bestPath(tsp,currentNeighbours)
+    return currentSolution,currentCost
+
+
+
+tsp = [
+        [0, 20,10,15],
+        [20, 0, 15, 11],
+        [10, 15, 0, 17],
+        [15, 11, 17, 0]
+    ]
+
+path,cost = hillClimbing(tsp)
+print(f'path: {path}')
+print(f'cost: {cost}')

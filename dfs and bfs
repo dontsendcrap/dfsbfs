@@ -1,0 +1,37 @@
+from collections import deque
+def dfs(source,adj,vis):
+    vis[source]=1
+    print(source)
+    for i in adj[source]:
+        if vis[i]==0:
+            dfs(i,adj,vis)
+
+def bfs(source,adj,vis):
+    q=deque()
+    q.append(source)
+    vis[source]=1
+    while len(q)>0:
+        node = q.popleft()
+        print(node)
+        for i in adj[node]:
+            if vis[i]==0:
+                q.append(i)
+                vis[i]=1
+
+nodes = int(input('Enter no of nodes from(0 to n):'))
+adj = [ [] for _ in range(nodes)]
+for i in range(nodes):
+    n = int(input(f'Enter no of neighbours for node {i} :'))
+    neighbours = []
+    for j in range(n):
+        x=int(input('Enter node number :'))
+        neighbours.append(x)
+    adj[i]=neighbours
+
+source = int(input('Enter source node :'))
+visited = [0]*nodes
+print("DFS TRAVERSAL :")
+dfs(source,adj,visited)
+visited=[0]*nodes
+print('BFS TRAVERSAL : ')
+bfs(source,adj,visited)

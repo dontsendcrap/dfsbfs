@@ -1,0 +1,38 @@
+#water jug
+from collections import deque
+
+def minSteps(m, n, d):
+    # If required amount is greater than both jugs' capacity, return -1
+    if d > max(m, n):
+        return -1
+    
+    # BFS queue: (jug1, jug2, steps)
+    q = deque([(0, 0, 0)])
+    
+    # Visited states (jug1, jug2)
+    vis = set()
+    vis.add((0, 0))
+    while q:
+        jug1, jug2, steps = q.popleft()
+        # If we have reached the required amount in either jug
+        if jug1 == d or jug2 == d:
+            return steps
+        
+        # Possible operations:
+        next_states = [
+            (m, jug2),  # Fill jug1
+            (jug1, n),  # Fill jug2
+            (0, jug2),  # Empty jug1
+            (jug1, 0),  # Empty jug2
+            (jug1 - min(jug1, n - jug2), jug2 + min(jug1, n - jug2)),  # Pour jug1 → jug2
+            (jug1 + min(jug2, m - jug1), jug2 - min(jug2, m - jug1))   # Pour jug2 → jug1
+        ]
+        # Push valid states to queue
+        for new_jug1, new_jug2 in next_states:
+            if (new_jug1, new_jug2) not in vis:
+                q.append((new_jug1, new_jug2, steps + 1))
+                vis.add((new_jug1, new_jug2))
+    return -1  # If no solution exists
+
+m, n, d = map(int, input().split())  # Input jug capacities and target amount
+print(minSteps(m, n, d))
